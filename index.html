@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#102c50"><title>MY FINANCE PRO</title>
+<link rel="manifest" href="manifest.json">
+<style>
+:root{--navy:#102c50;--navy2:#1b426d;--gold:#d9bd7b;--bg:#f2f5f9;--ink:#203047;--muted:#718096;--line:#e4eaf1;--green:#16845b;--red:#c34444}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Inter,system-ui,Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}.shell{max-width:1120px;margin:auto;padding:18px}
+.top{background:linear-gradient(120deg,var(--navy),var(--navy2));color:#fff;border-radius:22px;padding:23px;display:flex;justify-content:space-between;align-items:center;gap:16px;box-shadow:0 12px 30px #102c5020}
+.brand{display:flex;align-items:center;gap:13px}.logo{width:48px;height:48px;border-radius:15px;background:#ffffff18;border:1px solid #ffffff35;display:grid;place-items:center;color:var(--gold);font-size:25px}.top h1{font-size:21px;margin:0;letter-spacing:.5px}.top p{margin:3px 0 0;color:#d9e3ef;font-size:12px}.userbar{display:flex;align-items:center;gap:9px;flex-wrap:wrap}.pill{border:1px solid #ffffff45;padding:7px 11px;border-radius:30px;font-size:12px;color:#fff}
+.panel{background:#fff;border:1px solid var(--line);border-radius:17px;padding:19px;margin-top:16px;box-shadow:0 5px 20px #1d35570a}.auth{max-width:460px;margin:45px auto}.auth h2{margin:0 0 5px;color:var(--navy)}.muted{color:var(--muted);font-size:13px}
+h2.section{font-size:16px;color:var(--navy);margin:0 0 15px}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}.stat{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px}.stat small{display:block;color:var(--muted);font-size:12px}.stat strong{display:block;font-size:21px;margin-top:7px;color:var(--navy);overflow-wrap:anywhere}.stat.gold{background:#fffaf0;border-color:#f0e3c5}.stat.green strong{color:var(--green)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:14px}.field{margin-bottom:12px}.field label{display:block;font-size:12px;font-weight:700;color:#526176;margin-bottom:6px}.field input,.field select,.field textarea{width:100%;padding:11px 12px;border:1px solid #d8e0e9;border-radius:10px;background:#fff;outline:none}.field input:focus,.field select:focus{border-color:#6485ad;box-shadow:0 0 0 3px #6485ad18}
+.btn{border:0;border-radius:10px;padding:11px 15px;background:var(--navy);color:white;font-weight:700}.btn.gold{background:var(--gold);color:#26364a}.btn.light{background:#edf2f7;color:var(--navy)}.btn.small{padding:8px 11px;font-size:12px}.actions{display:flex;gap:9px;flex-wrap:wrap}.hidden{display:none!important}
+.notice{padding:11px 13px;border-radius:10px;background:#eef5ff;color:#294c75;font-size:13px;margin-top:12px}.error{background:#fff0f0;color:#a52c2c}.success{background:#ecf8f1;color:#176b49}.line{height:1px;background:var(--line);margin:15px 0}
+.barrow{display:grid;grid-template-columns:125px 1fr 90px;gap:10px;align-items:center;margin:12px 0;font-size:12px}.track{height:9px;border-radius:20px;background:#edf1f5;overflow:hidden}.fill{height:100%;background:var(--gold);border-radius:20px;width:0}.fill.blue{background:#537ba8}.fill.green{background:#25966c}
+.tablewrap{overflow:auto}table{border-collapse:collapse;width:100%;font-size:13px}th,td{text-align:left;padding:11px;border-bottom:1px solid var(--line);white-space:nowrap}th{color:var(--muted);font-size:11px;text-transform:uppercase}.tag{display:inline-block;padding:4px 8px;border-radius:20px;background:#edf2f7;color:#344b67;font-size:11px;font-weight:700}.tag.admin{background:#fff4d9;color:#805b12}
+footer{text-align:center;color:#8793a4;font-size:11px;padding:24px}
+@media(max-width:760px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.row{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}.shell{padding:12px}.stat strong{font-size:18px}}@media(max-width:390px){.stat{padding:12px}.stat strong{font-size:16px}}
+@media print{body{background:#fff}.top{background:#fff;color:#102c50;border:1px solid #ddd;box-shadow:none}.top p,.pill{color:#555}.no-print,#authPanel,#adminPanel{display:none!important}.panel,.stat{box-shadow:none;break-inside:avoid}}
+</style></head>
+<body><div class="shell">
+<header class="top"><div class="brand"><div class="logo">₣</div><div><h1>MY FINANCE PRO</h1><p>PERSONAL FINANCIAL MANAGEMENT</p></div></div><div class="userbar"><span id="userEmail" class="pill">Belum log masuk</span><span id="rolePill" class="pill hidden"></span><button id="logoutBtn" class="btn small light hidden">Log keluar</button></div></header>
+
+<section id="authPanel" class="panel auth">
+<h2>Selamat datang</h2><p class="muted">Log masuk atau cipta akaun untuk mengurus rekod kewangan anda.</p>
+<div class="field"><label>Alamat e-mel</label><input id="email" type="email" autocomplete="email" placeholder="nama@email.com"></div>
+<div class="field"><label>Kata laluan</label><input id="password" type="password" autocomplete="current-password" placeholder="Minimum 6 aksara"></div>
+<div class="actions"><button id="loginBtn" class="btn">Log masuk</button><button id="signupBtn" class="btn gold">Daftar akaun</button></div>
+<div id="authMessage" class="notice">Setiap pengguna mempunyai akaun masing-masing. Rekod kewangan hanya boleh dilihat oleh pemilik akaun.</div>
+</section>
+
+<main id="userPanel" class="hidden">
+<section class="panel no-print"><div class="row"><div class="field" style="margin:0"><label>Pilih bulan rekod</label><input type="month" id="month"></div><div class="field" style="margin:0"><label>Nama pemilik rekod (pilihan)</label><input id="recordName" placeholder="Nama anda"></div></div>
+<div class="actions" style="margin-top:12px"><button id="loadBtn" class="btn light">Muat rekod bulan ini</button><button id="saveBtn" class="btn">Simpan rekod</button><button id="printBtn" class="btn light">Cetak / PDF</button></div><div id="appMessage" class="notice">Masukkan maklumat dan simpan rekod.</div></section>
+<section class="grid" style="margin-top:16px"><div class="stat"><small>Jumlah pendapatan</small><strong id="sIncome">RM 0.00</strong></div><div class="stat gold"><small>Potongan takaful</small><strong id="sTakaful">RM 0.00</strong></div><div class="stat"><small>Jumlah komitmen</small><strong id="sCommit">RM 0.00</strong></div><div class="stat green"><small>Baki bersih</small><strong id="sBalance">RM 0.00</strong></div></section>
+<section class="panel"><h2 class="section">01 · Pendapatan bulanan</h2><div class="row"><div class="field"><label>Pendapatan utama (RM)</label><input class="calc" type="number" min="0" step="0.01" id="income" placeholder="0.00"></div><div class="field"><label>Pendapatan sampingan (RM)</label><input class="calc" type="number" min="0" step="0.01" id="extra" placeholder="0.00"></div></div></section>
+<section class="panel"><h2 class="section">02 · Potongan takaful</h2><div class="field"><label>Jumlah potongan takaful (RM) — isi sendiri</label><input class="calc" type="number" min="0" step="0.01" id="takaful" placeholder="Masukkan jumlah sendiri"></div><p class="muted">Tiada potongan peratusan automatik.</p></section>
+<section class="panel"><h2 class="section">03 · Komitmen bulanan</h2><div class="row">
+<div class="field"><label>Rumah / sewa (RM)</label><input class="calc commitment" type="number" min="0" step="0.01" id="house" placeholder="0.00"></div>
+<div class="field"><label>Kereta / kenderaan (RM)</label><input class="calc commitment" type="number" min="0" step="0.01" id="car" placeholder="0.00"></div>
+<div class="field"><label>Bil elektrik / air / telefon (RM)</label><input class="calc commitment" type="number" min="0" step="0.01" id="bills" placeholder="0.00"></div>
+<div class="field"><label>Makan / barang dapur (RM)</label><input class="calc commitment" type="number" min="0" step="0.01" id="food" placeholder="0.00"></div>
+<div class="field"><label>Pinjaman / hutang (RM)</label><input class="calc commitment" type="number" min="0" step="0.01" id="loan" placeholder="0.00"></div>
+<div class="field"><label>Keluarga / anak (RM)</label><input class="calc commitment" type="number" min="0" step="0.01" id="family" placeholder="0.00"></div>
+<div class="field"><label>Pengangkutan / minyak (RM)</label><input class="calc commitment" type="number" min="0" step="0.01" id="transport" placeholder="0.00"></div>
+<div class="field"><label>Lain-lain komitmen (RM)</label><input class="calc commitment" type="number" min="0" step="0.01" id="other" placeholder="0.00"></div>
+</div><div class="field"><label>Catatan tambahan</label><textarea id="notes" rows="3" placeholder="Catatan untuk bulan ini..."></textarea></div></section>
+<section class="panel"><h2 class="section">04 · Analisis kewangan</h2>
+<div class="barrow"><span>Pendapatan</span><div class="track"><div id="incomeBar" class="fill blue"></div></div><strong id="incomePct">0%</strong></div>
+<div class="barrow"><span>Takaful</span><div class="track"><div id="takafulBar" class="fill"></div></div><strong id="takafulPct">0%</strong></div>
+<div class="barrow"><span>Komitmen</span><div class="track"><div id="commitBar" class="fill green"></div></div><strong id="commitPct">0%</strong></div>
+<div class="line"></div><div class="grid"><div><small class="muted">Jumlah semua potongan</small><h3 id="totalDeductions">RM 0.00</h3></div><div><small class="muted">Status kewangan</small><h3 id="financeStatus">Belum dikira</h3></div></div></section>
+<section class="panel"><h2 class="section">05 · Rekod terdahulu</h2><div class="tablewrap"><table><thead><tr><th>Bulan</th><th>Pendapatan</th><th>Potongan</th><th>Baki</th><th></th></tr></thead><tbody id="history"><tr><td colspan="5">Belum ada rekod.</td></tr></tbody></table></div></section>
+</main>
+
+<main id="adminPanel" class="hidden">
+<section class="panel"><h2 class="section">ADMIN · Dashboard pengurusan</h2><p class="muted">Panel ini memaparkan maklumat akaun sahaja. Admin tidak diberi akses kepada nilai pendapatan, takaful, hutang atau rekod kewangan pengguna.</p>
+<div class="grid"><div class="stat"><small>Jumlah pengguna</small><strong id="adminUsers">0</strong></div><div class="stat gold"><small>Admin</small><strong id="adminAdmins">0</strong></div><div class="stat green"><small>Akaun berdaftar</small><strong id="adminRegistered">0</strong></div><div class="stat"><small>Peranan anda</small><strong>ADMIN</strong></div></div>
+<div class="line"></div><div class="actions"><button id="refreshUsers" class="btn">Muat semula senarai</button></div><div id="adminMessage" class="notice">Senarai akaun pengguna.</div>
+<div class="tablewrap" style="margin-top:12px"><table><thead><tr><th>E-mel</th><th>Peranan</th><th>Tarikh daftar</th><th>Status profil</th></tr></thead><tbody id="usersTable"><tr><td colspan="4">Memuatkan...</td></tr></tbody></table></div>
+</section>
+<section class="panel"><h2 class="section">Pengurusan peranan Admin</h2><p class="muted">Untuk keselamatan, pemberian atau penarikan peranan Admin dibuat melalui Supabase SQL Editor oleh pemilik projek. Jangan benarkan pengguna menukar peranan sendiri.</p><p class="muted">Lihat panduan dalam README untuk arahan SQL melantik Admin tambahan.</p></section>
+</main>
+</div><footer>MY FINANCE PRO · Data kewangan peribadi dilindungi oleh polisi akses pengguna</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/* GANTI DUA NILAI INI DENGAN SUPABASE PROJECT URL DAN ANON/PUBLISHABLE KEY.
+   Jangan letakkan service_role key dalam fail browser. */
+const SUPABASE_URL="PASTE_SUPABASE_PROJECT_URL_HERE";
+const SUPABASE_ANON_KEY="PASTE_SUPABASE_ANON_KEY_HERE";
+let sb=null,currentUser=null,currentRole=null;
+const $=id=>document.getElementById(id);
+const fields=["recordName","income","extra","takaful","house","car","bills","food","loan","family","transport","other","notes"];
+const numericFields=["income","extra","takaful","house","car","bills","food","loan","family","transport","other"];
+const num=id=>Math.max(0,Number($(id).value)||0);
+const fmt=n=>new Intl.NumberFormat("en-MY",{style:"currency",currency:"MYR"}).format(n||0);
+function msg(id,text,type="notice"){$(id).textContent=text;$(id).className="notice "+(type==="error"?"error":type==="success"?"success":"");}
+function calculate(){
+ const income=num("income")+num("extra"),takaful=num("takaful");
+ const commit=["house","car","bills","food","loan","family","transport","other"].reduce((s,id)=>s+num(id),0);
+ const deductions=takaful+commit,balance=income-deductions;
+ $("sIncome").textContent=fmt(income);$("sTakaful").textContent=fmt(takaful);$("sCommit").textContent=fmt(commit);
+ $("sBalance").textContent=fmt(balance);$("sBalance").style.color=balance<0?"#c34444":"#16845b";
+ $("totalDeductions").textContent=fmt(deductions);$("financeStatus").textContent=income===0?"Belum dikira":balance<0?"Defisit":balance===0?"Seimbang":"Berbaki";
+ const pct=x=>income>0?Math.min(100,x/income*100):0;
+ $("incomeBar").style.width=income>0?"100%":"0%";$("takafulBar").style.width=pct(takaful)+"%";$("commitBar").style.width=pct(commit)+"%";
+ $("incomePct").textContent=income>0?"100%":"0%";$("takafulPct").textContent=pct(takaful).toFixed(1)+"%";$("commitPct").textContent=pct(commit).toFixed(1)+"%";
+}
+function payload(){const p={};fields.forEach(id=>p[id]=$(id).value);numericFields.forEach(id=>p[id]=num(id));return p;}
+function fill(p){fields.forEach(id=>$(id).value=p&&p[id]!==undefined?p[id]:"");calculate();}
+function configured(){return SUPABASE_URL.startsWith("https://")&&SUPABASE_ANON_KEY!=="PASTE_SUPABASE_ANON_KEY_HERE";}
+function showAuth() {currentUser=null;currentRole=null;$("authPanel").classList.remove("hidden");$("userPanel").classList.add("hidden");$("adminPanel").classList.add("hidden");$("logoutBtn").classList.add("hidden");$("rolePill").classList.add("hidden");$("userEmail").textContent="Belum log masuk";}
+async function init(){
+ if(!configured()){msg("authMessage","Sebelum digunakan, masukkan Supabase Project URL dan anon/public key dalam index.html, kemudian jalankan supabase-schema.sql.","error");$("loginBtn").disabled=true;$("signupBtn").disabled=true;return;}
+ sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+ const {data:{session}}=await sb.auth.getSession();if(session)await enterApp(session.user);
+ sb.auth.onAuthStateChange(async(_event,session)=>{if(session)await enterApp(session.user);else showAuth();});
+}
+async function enterApp(user){
+ currentUser=user;$("authPanel").classList.add("hidden");$("logoutBtn").classList.remove("hidden");$("userEmail").textContent=user.email||"Pengguna";
+ const {data:profile,error}=await sb.from("user_profiles").select("role").eq("user_id",user.id).maybeSingle();
+ if(error||!profile){msg("authMessage","Profil akaun belum tersedia. Sila hubungi pentadbir.","error");await sb.auth.signOut();return;}
+ currentRole=profile.role;$("rolePill").textContent=currentRole.toUpperCase();$("rolePill").classList.remove("hidden");
+ if(currentRole==="admin"){$("userPanel").classList.add("hidden");$("adminPanel").classList.remove("hidden");await loadAdminUsers();}
+ else{$("adminPanel").classList.add("hidden");$("userPanel").classList.remove("hidden");if(!$("month").value){const d=new Date();$("month").value=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");}await loadRecord();await loadHistory();}
+}
+$("signupBtn").onclick=async()=>{const email=$("email").value.trim(),password=$("password").value;if(!email||password.length<6){msg("authMessage","Masukkan e-mel sah dan kata laluan sekurang-kurangnya 6 aksara.","error");return;}const {error}=await sb.auth.signUp({email,password});if(error)msg("authMessage",error.message,"error");else msg("authMessage","Pendaftaran diterima. Semak e-mel untuk pengesahan jika diminta.","success");};
+$("loginBtn").onclick=async()=>{const {error}=await sb.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});if(error)msg("authMessage",error.message,"error");};
+$("logoutBtn").onclick=async()=>{if(sb)await sb.auth.signOut();};
+$("saveBtn").onclick=async()=>{if(!currentUser||currentRole!=="user")return;const month=$("month").value;if(!month){msg("appMessage","Pilih bulan terlebih dahulu.","error");return;}const {error}=await sb.from("finance_records").upsert({user_id:currentUser.id,record_month:month,data:payload(),updated_at:new Date().toISOString()},{onConflict:"user_id,record_month"});if(error)msg("appMessage","Gagal menyimpan: "+error.message,"error");else{msg("appMessage","Rekod "+month+" berjaya disimpan.","success");loadHistory();}};
+async function loadRecord(){if(!currentUser||currentRole!=="user")return;const month=$("month").value;if(!month)return;const {data,error}=await sb.from("finance_records").select("data").eq("user_id",currentUser.id).eq("record_month",month).maybeSingle();if(error){msg("appMessage","Ralat memuat rekod: "+error.message,"error");return;}if(data){fill(data.data);msg("appMessage","Rekod "+month+" dimuatkan.","success");}else{fill({});msg("appMessage","Belum ada rekod bulan ini. Isi maklumat dan tekan Simpan rekod.");}}
+$("loadBtn").onclick=loadRecord;$("month").addEventListener("change",loadRecord);
+async function loadHistory(){if(!currentUser||currentRole!=="user")return;const {data,error}=await sb.from("finance_records").select("record_month,data").eq("user_id",currentUser.id).order("record_month",{ascending:false}).limit(12);if(error)return;const body=$("history");body.innerHTML="";if(!data?.length){body.innerHTML="<tr><td colspan='5'>Belum ada rekod disimpan.</td></tr>";return;}data.forEach(r=>{const p=r.data||{},inc=(+p.income||0)+(+p.extra||0),ded=["takaful","house","car","bills","food","loan","family","transport","other"].reduce((s,k)=>s+(+p[k]||0),0),tr=document.createElement("tr");[r.record_month,fmt(inc),fmt(ded),fmt(inc-ded)].forEach(v=>{const td=document.createElement("td");td.textContent=v;tr.appendChild(td);});const td=document.createElement("td"),b=document.createElement("button");b.className="btn small light";b.textContent="Buka";b.onclick=()=>{$("month").value=r.record_month;fill(p);window.scrollTo({top:0,behavior:"smooth"});};td.appendChild(b);tr.appendChild(td);body.appendChild(tr);});}
+async function loadAdminUsers(){
+ if(!currentUser||currentRole!=="admin")return;
+ msg("adminMessage","Memuat senarai akaun...");
+ const {data,error}=await sb.from("user_profiles").select("user_id,email,role,created_at").order("created_at",{ascending:false}).limit(500);
+ if(error){msg("adminMessage","Tidak dapat memuat senarai: "+error.message,"error");return;}
+ const users=data||[];$("adminUsers").textContent=users.length;$("adminAdmins").textContent=users.filter(x=>x.role==="admin").length;$("adminRegistered").textContent=users.length;
+ const body=$("usersTable");body.innerHTML="";
+ if(!users.length){body.innerHTML="<tr><td colspan='4'>Tiada pengguna berdaftar.</td></tr>";}
+ users.forEach(u=>{const tr=document.createElement("tr");const email=document.createElement("td");email.textContent=u.email||"(e-mel tidak tersedia)";const role=document.createElement("td");const tag=document.createElement("span");tag.className="tag "+(u.role==="admin"?"admin":"");tag.textContent=(u.role||"user").toUpperCase();role.appendChild(tag);const date=document.createElement("td");date.textContent=u.created_at?new Date(u.created_at).toLocaleDateString("ms-MY"):"—";const status=document.createElement("td");status.textContent="Berdaftar";[email,role,date,status].forEach(td=>tr.appendChild(td));body.appendChild(tr);});
+ msg("adminMessage","Senarai akaun berjaya dimuatkan. Paparan ini tidak mengandungi rekod kewangan.","success");
+}
+$("refreshUsers").onclick=loadAdminUsers;$("printBtn").onclick=()=>window.print();
+document.querySelectorAll(".calc").forEach(el=>el.addEventListener("input",calculate));
+if("serviceWorker"in navigator&&location.protocol.startsWith("http"))window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
+init();
+</script></body></html>
