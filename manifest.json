@@ -1,0 +1,9 @@
+{
+  "name":"MY FINANCE PRO",
+  "short_name":"Finance Pro",
+  "description":"Pengurusan pendapatan dan komitmen bulanan",
+  "start_url":"./",
+  "display":"standalone",
+  "background_color":"#f2f5f9",
+  "theme_color":"#102c50"
+}
