@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#102c50">
+<title>MY FINANCE PRO</title>
+<style>
+:root{--navy:#102c50;--gold:#d9bd7b;--bg:#f2f5f9;--line:#e4eaf1}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#203047;font:15px/1.5 system-ui,Arial}
+.wrap{max-width:950px;margin:auto;padding:16px}.top{background:linear-gradient(120deg,#102c50,#1b426d);color:white;padding:22px;border-radius:20px}
+.panel{background:white;border:1px solid var(--line);border-radius:16px;padding:18px;margin-top:16px}
+h1{margin:0;font-size:22px}h2{font-size:18px;color:var(--navy)}
+label{display:block;font-size:13px;margin:10px 0 5px}input{width:100%;padding:12px;border:1px solid #d8e0e9;border-radius:10px}
+button{border:0;border-radius:10px;padding:11px 15px;background:var(--navy);color:white;font-weight:700;margin:8px 5px 0 0}
+.gold{background:var(--gold);color:#26364a}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.stat{padding:14px;background:#f8fafc;border:1px solid var(--line);border-radius:12px}.stat strong{display:block;font-size:20px;color:var(--navy)}
+.hidden{display:none!important}.notice{padding:12px;background:#eef5ff;border-radius:10px;margin-top:12px;font-size:13px}
+@media(min-width:700px){.grid{grid-template-columns:repeat(4,1fr)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top"><h1>MY FINANCE PRO</h1><div>PERSONAL FINANCIAL MANAGEMENT</div><p id="signed">Belum log masuk</p></header>
+<section id="auth" class="panel">
+<h2>Selamat datang</h2><p>Log masuk atau cipta akaun untuk mengurus rekod kewangan anda.</p>
+<label>Alamat e-mel</label><input id="email" type="email" autocomplete="email">
+<label>Kata laluan</label><input id="password" type="password" autocomplete="current-password">
+<button id="login">Log masuk</button><button class="gold" id="signup">Daftar akaun</button>
+<div id="authMsg" class="notice">Sila log masuk atau daftar akaun.</div>
+</section>
+<main id="app" class="hidden">
+<section class="panel"><h2>Dashboard kewangan</h2>
+<label>Bulan</label><input id="month" type="month">
+<div class="grid">
+<div><label>Pendapatan utama (RM)</label><input id="income" type="number" min="0" step=".01"></div>
+<div><label>Pendapatan sampingan (RM)</label><input id="extra" type="number" min="0" step=".01"></div>
+<div><label>Potongan takaful (RM)</label><input id="takaful" type="number" min="0" step=".01"></div>
+<div><label>Rumah / sewa (RM)</label><input id="house" type="number" min="0" step=".01"></div>
+<div><label>Kereta (RM)</label><input id="car" type="number" min="0" step=".01"></div>
+<div><label>Bil (RM)</label><input id="bills" type="number" min="0" step=".01"></div>
+<div><label>Makan / dapur (RM)</label><input id="food" type="number" min="0" step=".01"></div>
+<div><label>Pinjaman / hutang (RM)</label><input id="loan" type="number" min="0" step=".01"></div>
+</div>
+<button id="save">Simpan rekod</button><button class="gold" id="logout">Log keluar</button>
+<div class="grid" style="margin-top:16px">
+<div class="stat">Pendapatan<strong id="totalIncome">RM 0.00</strong></div>
+<div class="stat">Potongan<strong id="totalDed">RM 0.00</strong></div>
+<div class="stat">Baki<strong id="balance">RM 0.00</strong></div>
+</div>
+<div id="appMsg" class="notice">Rekod anda disimpan secara peribadi.</div>
+</section>
+</main>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL="https://htgivadhsbcvokefbvpn.supabase.co";
+const SUPABASE_ANON_KEY="sb_publishable_kW0ClWmcQhnJAifBrRh7mA_fkITuY23";
+const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+const $=id=>document.getElementById(id);
+const ids=["income","extra","takaful","house","car","bills","food","loan"];
+const n=id=>Math.max(0,Number($(id).value)||0);
+const money=x=>new Intl.NumberFormat("ms-MY",{style:"currency",currency:"MYR"}).format(x);
+function calc(){let inc=n("income")+n("extra"),ded=ids.slice(2).reduce((s,id)=>s+n(id),0);$("totalIncome").textContent=money(inc);$("totalDed").textContent=money(ded);$("balance").textContent=money(inc-ded);}
+ids.forEach(id=>$(id).addEventListener("input",calc));
+async function enter(user){$("auth").classList.add("hidden");$("app").classList.remove("hidden");$("signed").textContent=user.email||"Pengguna";const d=new Date();$("month").value=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");}
+$("signup").onclick=async()=>{const {error}=await sb.auth.signUp({email:$("email").value.trim(),password:$("password").value});$("authMsg").textContent=error?error.message:"Pendaftaran diterima. Semak e-mel untuk pengesahan jika diminta.";};
+$("login").onclick=async()=>{const {data,error}=await sb.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});if(error)$("authMsg").textContent=error.message;else await enter(data.user);};
+$("logout").onclick=async()=>{await sb.auth.signOut();$("app").classList.add("hidden");$("auth").classList.remove("hidden");$("signed").textContent="Belum log masuk";};
+$("save").onclick=async()=>{$("appMsg").textContent="Fungsi simpan perlu dipadankan dengan struktur jadual dan polisi RLS Supabase anda sebelum digunakan.";};
+sb.auth.getSession().then(({data})=>{if(data.session)enter(data.session.user);});
+</script>
+</body></html>
