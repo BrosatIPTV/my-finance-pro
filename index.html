@@ -24,4 +24,48 @@ async function saveFinance(){let cid=$('financeCustomer').value,m=$('month').val
 async function report(){let cid=$('reportCustomer').value,m=$('reportMonth').value+'-01',c=customers.find(x=>x.id===cid);if(!c||!$('reportMonth').value)return;$('reportOut').innerHTML='<p>Memuatkan laporan...</p>';let{data,error}=await db.from('customer_finance_monthly').select('*').eq('customer_id',cid).eq('record_month',m).maybeSingle();if(error)return $('reportOut').textContent=error.message;if(!data)return $('reportOut').textContent='Tiada rekod bulan ini.';fields.forEach(k=>$(k).value=data[k]??0);let t=calc();let rows=fields.map(k=>`<tr><td>${k.replaceAll('_',' ')}</td><td>${fmt(data[k])}</td></tr>`).join('');$('reportOut').innerHTML=`<div class="panel"><h2>${esc(c.full_name)}</h2><p>Bulan ${$('reportMonth').value} | ${esc(c.phone||'')}</p><table>${rows}</table><p>Pendapatan: <b>${fmt(t.income)}</b> | Perbelanjaan: <b>${fmt(t.expense)}</b> | Baki: <b>${fmt(t.balance)}</b></p></div>`;}
 async function start(u){user=u;let{data:p,error}=await db.from('user_profiles').select('user_id,email,role').eq('user_id',u.id).single();if(error)throw error;role=p.role;$('auth').classList.add('hidden');$('app').classList.remove('hidden');$('who').textContent=(u.email||'')+' — '+role.toUpperCase();$('assignBox').classList.toggle('hidden',role!=='admin');if(role==='admin')await loadProfiles();let d=new Date(),ym=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;$('month').value=ym;$('reportMonth').value=ym;await loadCustomers();}
 $('login').onclick=async()=>{let{data,error}=await db.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(error)return msg('authMsg',error.message,'error');try{await start(data.user)}catch(e){msg('authMsg',e.message,'error')}};$('signup').onclick=async()=>{let{error}=await db.auth.signUp({email:$('email').value.trim(),password:$('password').value});msg('authMsg',error?error.message:'Pendaftaran dihantar. Sahkan e-mel jika diminta. Akaun baharu ialah Penasihat.');};$('logout').onclick=async()=>{await db.auth.signOut();location.reload()};$('saveCustomer').onclick=saveCustomer;$('loadFinance').onclick=loadFinance;$('saveFinance').onclick=saveFinance;$('makeReport').onclick=report;$('search').oninput=()=>{let q=$('search').value.toLowerCase();let filtered=customers.filter(c=>(c.full_name+' '+(c.phone||'')).toLowerCase().includes(q));let old=customers;customers=filtered;render();customers=old;};document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>show(b.dataset.tab));document.addEventListener('click',e=>{let b=e.target.closest('button');if(!b)return;if(b.dataset.edit)editCustomer(b.dataset.edit);if(b.dataset.fin){$('financeCustomer').value=b.dataset.fin;show('finance');loadFinance()}if(b.dataset.del&&confirm('Padam pelanggan dan semua rekod kewangan?'))db.from('customers').delete().eq('id',b.dataset.del).then(({error})=>error?alert(error.message):loadCustomers())});db.auth.getSession().then(async({data})=>{if(data.session)try{await start(data.session.user)}catch(e){msg('authMsg',e.message,'error')}});
+
+$("loginBtn").onclick = async () => {
+  const btn = $("loginBtn");
+  const email = $("email").value.trim();
+  const password = $("password").value;
+
+  if (!email || !password) {
+    notice("authMsg", "Sila isi e-mel dan kata laluan.", "error");
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = "Sedang log masuk...";
+
+  try {
+    const loginPromise = db.auth.signInWithPassword({
+      email,
+      password
+    });
+
+    const timeout = new Promise((_, reject) =>
+      setTimeout(() => reject(
+        new Error("Sambungan mengambil masa terlalu lama. Semak internet dan Supabase.")
+      ), 15000)
+    );
+
+    const { data, error } = await Promise.race([
+      loginPromise,
+      timeout
+    ]);
+
+    if (error) throw error;
+
+    await startApp(data.user);
+
+    notice("authMsg", "Log masuk berjaya.", "success");
+
+  } catch (error) {
+    notice("authMsg", "Ralat: " + error.message, "error");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Log masuk";
+  }
+};
 </script></body></html>
